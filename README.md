@@ -92,13 +92,20 @@ text
 
 rds-platform/
 │
+
 ├── index.html              # Login/Signup page
+
 ├── dashboard.html          # Citizen dashboard
+
 ├── admin-dashboard.html    # Admin management portal
+
 ├── style.css               # Global styles
+
 ├── script.js               # Application logic
+
 │
 └── README.md               # Project documentation
+
 
 Note: The final version consolidates all dashboards into index.html for simplicity.
 
@@ -114,11 +121,17 @@ Maximum per feedback	20
 Badges
 Badge	Requirement
 🪴 First Report	1 feedback submitted
+
 ⭐ Active Citizen	5 feedbacks submitted
+
 💎 Contributor	100 impact points
+
 🏆 Community Champion	10 feedbacks submitted
+
 👑 Elite Member	500 impact points
+
 Support Hub
+
 ### Channel	Contact
  Email	support@rds.gov.rw
  Phone/SMS	+250 790 801 866
@@ -138,15 +151,23 @@ Example: admin.john.rds@.com
 
 Password: Your choice (minimum 4 characters)
 
-Future Roadmap
+### Future Roadmap
 Feature	Status
+
 Backend API (Node.js + MongoDB)	📋 Planned
+
 Real-time notifications	📋 Planned
+
 Email notifications for feedback replies	📋 Planned
+
 Mobile app (React Native)	📋 Planned
+
 Kinyarwanda language support	📋 Planned
+
 Project image uploads	📋 Planned
-Contributing
+
+### Contributing
+
 Fork the repository
 
 Create a feature branch: git checkout -b feature/amazing-feature
@@ -157,11 +178,12 @@ Push: git push origin feature/amazing-feature
 
 Open a Pull Request
 
-License
+### License
 MIT License – see LICENSE file for details.
 
 Contact
-Project Maintainer:
+### Project Maintainer:
+
 📧 Email: support@rds.gov.rw
 📞 Phone: +250 790 801 866
 
