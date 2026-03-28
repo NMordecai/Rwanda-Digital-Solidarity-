@@ -5,6 +5,29 @@ markdown
 A digital platform connecting Rwandan citizens with national infrastructure projects through feedback, engagement, and community participation.
 
 ---
+### PROBLEM:
+There was found to be some problems like 
+
+- Citizens lack visibility into national infrastructure projects
+  
+- No centralized platform for public feedback and engagement
+  
+- Limited channels to contribute to Rwanda's digital transformation
+
+### MISSION: 
+My mission is to 
+Empower every Rwandan citizen to actively participate in building the nation's digital future through transparent communication and meaningful contribution."
+
+### SOLUTION: 
+combining my missio  to the problem, I came u with the solution:
+
+- Centralized dashboard showcasing all active infrastructure projects
+  
+- Feedback system with impact points to encourage participation
+  
+- Role-based access for citizens and administrators
+  
+- Real-time project progress tracking and updates
 
 ## Overview
 
