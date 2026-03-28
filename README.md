@@ -14,12 +14,12 @@ Rwanda Digital Solidarity (RDS) is a web-based platform that bridges the gap bet
 
 ## Features
 
-### 🔐 Authentication
+###  Authentication
 - **User Registration & Login** – Create an account with email and password
 - **Admin Registration & Login** – Secure admin access with email pattern validation (must contain "admin" and end with "rds@.com")
 - **Role-Based Redirects** – Users go to citizen dashboard, admins go to management portal
 
-### 👥 Citizen Dashboard
+###  Citizen Dashboard
 - **Project Explorer** – Browse active infrastructure projects with progress indicators
 - **Feedback Submission** – Rate projects (1-5 stars) and share detailed observations
 - **Impact Points System** – Earn 10 base points + 2 points per star rating
@@ -29,7 +29,7 @@ Rwanda Digital Solidarity (RDS) is a web-based platform that bridges the gap bet
 - **Impact Statistics** – Track total reports, points earned, and average rating
 - **Rwanda Map** – View all project locations on an interactive map
 
-### 🛡️ Admin Dashboard
+###  Admin Dashboard
 - **Statistics Overview** – Total users, active projects, feedback count, pending replies
 - **Feedback Management** – Review citizen feedback and respond with admin replies
 - **Project Management** – Create, edit, and delete infrastructure projects
@@ -117,13 +117,13 @@ Badge	Requirement
 🏆 Community Champion	10 feedbacks submitted
 👑 Elite Member	500 impact points
 Support Hub
-Channel	Contact
-📧 Email	support@rds.gov.rw
-📞 Phone/SMS	+250 790 801 866
-💬 WhatsApp	+250 790 801 866
-Browser Support
+### Channel	Contact
+ Email	support@rds.gov.rw
+ Phone/SMS	+250 790 801 866
+ WhatsApp	+250 790 801 866
+### Browser Support
 Chrome	Firefox	Safari	Edge
-✅	✅	✅	✅
+
 Demo Accounts
 Regular User
 Sign up with any email (e.g., citizen@example.com)
