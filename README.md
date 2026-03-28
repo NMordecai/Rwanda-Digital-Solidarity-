@@ -9,6 +9,7 @@ A digital platform connecting Rwandan citizens with national infrastructure proj
 ## Overview
 
 Rwanda Digital Solidarity (RDS) is a web-based platform that bridges the gap between government infrastructure projects and citizens. Users can track project progress, submit feedback, earn impact points, and engage directly with project administrators. The platform features role-based access for citizens and administrators, ensuring a secure and organized experience.
+**SRS** https://docs.google.com/document/d/1fum9YASAhRTuMZSTfXUy9BGKJCX3AJyDnxQ9xu3U2qg/edit?tab=t.0
 
 ---
 
@@ -70,24 +71,38 @@ Option B: Use Live Server extension in VS Code for auto-refresh
 
 No build steps or dependencies required – Everything runs client-side
 
-How It Works
+### How It Works
 User Journey
 Step	Action	Result
+
 1	Sign up with email and password	Account created
+
 2	Login with credentials	Redirected to citizen dashboard
+
 3	Browse projects	See all active projects with progress
+
 4	Click a project	Opens feedback form
+
 5	Write feedback and rate project	Points awarded, badge progress updates
+
 6	View impact stats	Track your contributions
-Admin Journey
+
+### Admin Journey
 Step	Action	Result
+
 1	Sign up with admin email pattern	Admin account created
+
 2	Login with credentials	Redirected to admin dashboard
+
 3	View pending feedback	See unread citizen submissions
+
 4	Reply to feedback	User receives admin response
+
 5	Add/edit projects	Projects updated for all users
+
 6	View users	Monitor platform activity
-Project Structure
+
+### Project Structure
 text
 
 rds-platform/
@@ -109,17 +124,24 @@ rds-platform/
 
 Note: The final version consolidates all dashboards into index.html for simplicity.
 
-Impact Points System
+### Impact Points System
 Action	Points
 Submitting feedback	10
+
 1-star rating	+2
+
 2-star rating	+4
+
 3-star rating	+6
+
 4-star rating	+8
+
 5-star rating	+10
+
 Maximum per feedback	20
+
 Badges
-Badge	Requirement
+### Badge	Requirement
 🪴 First Report	1 feedback submitted
 
 ⭐ Active Citizen	5 feedbacks submitted
@@ -133,20 +155,30 @@ Badge	Requirement
 Support Hub
 
 ### Channel	Contact
+
  Email	support@rds.gov.rw
+ 
  Phone/SMS	+250 790 801 866
+ 
  WhatsApp	+250 790 801 866
+ 
 ### Browser Support
-Chrome	Firefox	Safari	Edge
+
+Chrome
+Firefox
+Safari
+Edge
 
 Demo Accounts
 Regular User
+
 Sign up with any email (e.g., citizen@example.com)
 
 Password: 123456 (minimum 6 characters)
+### Admin
 
-Admin
 Email must contain "admin" and end with "rds@.com"
+
 Example: admin.john.rds@.com
 
 Password: Your choice (minimum 4 characters)
