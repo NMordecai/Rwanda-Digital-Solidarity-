@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDS - Rwanda Digital Solidarity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --nav: #0f3b5c;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        .dark-mode {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --nav: #0f172a;
+            --border: #334155;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        /* Auth Container */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f3b5c 0%, #1a5d7a 100%);
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .dark-mode .auth-container { background: var(--card); }
+
+        .auth-icon { font-size: 3rem; color: #0f3b5c; margin-bottom: 16px; }
+        
+        .tab-buttons, .admin-toggle {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-btn, .admin-toggle-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .tab-btn.active, .admin-toggle-btn.active {
+            color: #0f3b5c;
+            border-bottom: 2px solid #0f3b5c;
+        }
+
+        .admin-toggle-btn.active { color: #f59e0b; border-bottom-color: #f59e0b; }
+
+        .auth-form, .admin-form { display: none; }
+        .auth-form.active, .admin-form.active { display: block; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: var(--bg);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #0f3b5c, #1a5d7a);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .admin-section {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 2px solid #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(249, 115, 22, 0.05));
+            border-radius: 16px;
+        }
+
+        .admin-section h3 {
+            color: #f59e0b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 24px;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            display: none;
+            min-height: 100vh;
+        }
+        .dashboard-container.active { display: block; }
+
+        .navbar {
+            background: var(--nav);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-navbar { background: linear-gradient(135deg, #1e293b, #0f172a); border-bottom: 4px solid #f59e0b; }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stats-badge, .points-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .points-badge {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+        }
+
+        #theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 40px;
+            background: var(--card);
+            min-width: 200px;
+            border-radius: 12px;
+            z-index: 100;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .dropdown-content.show { display: block; }
+
+        .dropdown-content a {
+            color: var(--text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-content a:hover { background: var(--bg); }
+
+        .dash-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            gap: 24px;
+            margin: 24px auto;
+            max-width: 1600px;
+            padding: 0 24px;
+        }
+
+        .sidebar-left, .sidebar-right {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+
+        .user-profile-card {
+            background: linear-gradient(135deg, var(--info)10, var(--success)10);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-avatar i { font-size: 3rem; color: var(--info); }
+        .profile-badge {
+            display: inline-block;
+            background: var(--info);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .shortcut-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .shortcut-item {
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .shortcut-item:hover { background: var(--info); color: white; }
+
+        .impact-score {
+            text-align: center;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--info)20, var(--success)20);
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+
+        .score-number { font-size: 2rem; font-weight: bold; color: var(--info); }
+        .badge-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .badge {
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            border: 1px solid var(--border);
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--info), var(--success));
+            padding: 24px;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .filter-btn.active { background: var(--info); color: white; }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+
+        .card-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-icon { font-size: 2rem; }
+        .progress-indicator {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .card-content { padding: 20px; }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .join-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .feedback-list { max-height: 600px; overflow-y: auto; }
+        .feedback-item { padding: 12px; border-bottom: 1px solid var(--border); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--card);
+            margin: 5% auto;
+            width: 550px;
+            max-width: 90%;
+            border-radius: 20px;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-body { padding: 24px; }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 16px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .stars { display: flex; gap: 8px; margin-top: 8px; }
+        .stars i { font-size: 1.5rem; cursor: pointer; color: var(--warning); }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--info), var(--success));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 24px;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--info);
+        }
+
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+
+        .empty-state { text-align: center; padding: 40px; color: var(--text-light); }
+
+        /* Admin Panel Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-number { font-size: 2.5rem; font-weight: bold; color: var(--info); }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .admin-tab.active { color: var(--info); border-bottom: 2px solid var(--info); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .feedback-card, .project-card, .user-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .project-card, .user-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .reply-section textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--card);
+            margin: 10px 0;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary { background: var(--info); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+        @media (max-width: 768px) {
+            .dash-container { grid-template-columns: 1fr; }
+            .sidebar-right { display: none; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="auth-container">
+            <div class="auth-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <h2>RDS Platform</h2>
+            <p>Rwanda Digital Solidarity</p>
+
+            <div class="tab-buttons">
+                <button id="userLoginBtn" class="tab-btn active" onclick="switchTab('userLogin')">Sign In</button>
+                <button id="userSignupBtn" class="tab-btn" onclick="switchTab('userSignup')">Sign Up</button>
+            </div>
+
+            <div id="userLoginForm" class="auth-form active">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="uLogEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="uLogPass" placeholder="Enter your password">
+                </div>
+                <button class="auth-btn" onclick="handleUserAction('login')">Sign In</button>
+            </div>
+
+            <div id="userSignupForm" class="auth-form">
+                <div class="form-group"><input type="text" id="uSignName" placeholder="Full Name"></div>
+                <div class="form-group"><input type="email" id="uSignEmail" placeholder="Email Address"></div>
+                <div class="form-group"><input type="password" id="uSignPass" placeholder="Password"></div>
+                <div class="form-group"><input type="password" id="uSignConfirm" placeholder="Confirm Password"></div>
+                <button class="auth-btn" onclick="handleUserAction('signup')">Create Account</button>
+            </div>
+
+            <div class="admin-section">
+                <h3><i class="fa-solid fa-shield-hooded"></i> Admin Access Only</h3>
+                <div class="admin-toggle">
+                    <button id="admLoginBtn" class="admin-toggle-btn active" onclick="switchAdminTab('login')">Admin Login</button>
+                    <button id="admSignupBtn" class="admin-toggle-btn" onclick="switchAdminTab('signup')">Admin Signup</button>
+                </div>
+
+                <div id="adminLoginForm" class="admin-form active">
+                    <input type="email" id="admLogEmail" placeholder="admin.name.rds@.com" style="width:100%; padding:12px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border);">
+                    <input type="password" id="admLogPass" placeholder="Password" style="width:100%; padding:12px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border);">
+                    <button class="auth-btn" style="background:#f59e0b;" onclick="handleAdminAction('login')">Secure Login</button>
+                </div>
+
+                <div id="adminSignupForm" class="admin-form">
+                    <input type="text" id="admSignName" placeholder="Admin Full Name" style="width:100%; padding:12px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border);">
+                    <input type="email" id="admSignEmail" placeholder="Must include 'admin' & 'rds@.com'" style="width:100%; padding:12px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border);">
+                    <input type="password" id="admSignPass" placeholder="Password" style="width:100%; padding:12px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border);">
+                    <button class="auth-btn" style="background:#f59e0b;" onclick="handleAdminAction('signup')">Request Admin Role</button>
+                </div>
+            </div>
+
+            <div class="features">
+                <span><i class="fa-solid fa-chart-line"></i> Track Progress</span>
+                <span><i class="fa-solid fa-comments"></i> Share Feedback</span>
+                <span><i class="fa-solid fa-trophy"></i> Earn Points</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regular User Dashboard -->
+    <div id="userDashboard" class="dashboard-container">
+        <nav class="navbar">
+            <div class="logo"><i class="fa-solid fa-hand-holding-heart"></i> RDS Citizen Portal</div>
+            <div class="nav-right">
+                <div class="stats-badge"><i class="fa-solid fa-chart-line"></i> <span id="userReportCount">0</span> Reports</div>
+                <div class="points-badge"><i class="fa-solid fa-star"></i> <span id="userPointsCount">0</span> Points</div>
+                <button id="themeToggle" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+                <div class="user-info">
+                    <i class="fa-solid fa-user-circle"></i> Welcome, <strong id="userDisplayName">Citizen</strong>
+                    <div class="dropdown">
+                        <button class="dropdown-btn" onclick="toggleDropdown('userDropdown')"><i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="dropdown-content" id="userDropdown">
+                            <a href="#" onclick="showUserProfile()"><i class="fa-solid fa-id-card"></i> My Profile</a>
+                            <hr><a href="#" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dash-container">
+            <aside class="sidebar-left">
+                <div class="user-profile-card">
+                    <div class="profile-avatar"><i class="fa-solid fa-user-circle"></i></div>
+                    <h4 id="userProfileName">User Name</h4>
+                    <p id="userProfileEmail">user@email.com</p>
+                    <div class="profile-badge" id="userBadge">Citizen</div>
+                </div>
+                
+                <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
+                <div class="shortcut-list">
+                    <div class="shortcut-item" onclick="showMap()"><i class="fa-solid fa-map-location-dot"></i><span>Project Map</span></div>
+                    <div class="shortcut-item" onclick="showUserReports()"><i class="fa-solid fa-clock-history"></i><span>My Reports</span></div>
+                    <div class="shortcut-item" onclick="showSupport()"><i class="fa-solid fa-headset"></i><span>Support Hub</span></div>
+                    <div class="shortcut-item" onclick="showUserDigitalID()"><i class="fa-solid fa-id-card-clip"></i><span>Digital ID Hub</span></div>
+                    <div class="shortcut-item" onclick="showUserStats()"><i class="fa-solid fa-chart-simple"></i><span>Impact Stats</span></div>
+                </div>
+
+                <div class="sidebar-extra">
+                    <h4><i class="fa-solid fa-trophy"></i> Your Impact</h4>
+                    <div class="impact-score">
+                        <div class="score-number" id="userImpactScore">0</div>
+                        <div class="score-label">Impact Points</div>
+                    </div>
+                    <div class="badge-list" id="userBadgeList"></div>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="welcome-banner">
+                    <h2>Welcome to RDS Platform, <span id="userWelcomeName">Citizen</span>! 🇷🇼</h2>
+                    <p>Share your feedback and help build Rwanda's digital future</p>
+                </div>
+                
+                <div class="section-header">
+                    <h2 class="section-title">Active Digital Infrastructure Projects</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterProjects('all')">All</button>
+                        <button class="filter-btn" onclick="filterProjects('tech')">Tech</button>
+                        <button class="filter-btn" onclick="filterProjects('infra')">Infrastructure</button>
+                        <button class="filter-btn" onclick="filterProjects('energy')">Energy</button>
+                    </div>
+                </div>
+                
+                <div class="project-grid" id="projectGrid"></div>
+            </main>
+
+            <aside class="sidebar-right">
+                <h3><i class="fa-solid fa-bell"></i> Recent Activity</h3>
+                <div id="userRecentFeedback" class="feedback-list"></div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="dashboard-container">
+        <nav class="navbar admin-navbar">
+            <div class="logo">
+                <i class="fa-solid fa-shield-hooded"></i>
+                RDS Admin Portal
+                <span class="admin-badge">ADMIN</span>
+            </div>
+            <div class="nav-right">
+                <button id="themeToggleAdmin" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+                <div class="user-info">
+                    <i class="fa-solid fa-user-shield"></i> Admin, <strong id="adminDisplayName">Administrator</strong>
+                    <div class="dropdown">
+                        <button class="dropdown-btn" onclick="toggleDropdown('adminDropdown')"><i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="dropdown-content" id="adminDropdown">
+                            <a href="#" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProjects">0</div>
+                    <div class="stat-label">Active Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalFeedback">0</div>
+                    <div class="stat-label">Total Feedback</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingFeedback">0</div>
+                    <div class="stat-label">Pending Replies</div>
+                </div>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchAdminDashboardTab('feedback')">📝 Feedback Management</button>
+                <button class="admin-tab" onclick="switchAdminDashboardTab('projects')">🏗️ Project Management</button>
+                <button class="admin-tab" onclick="switchAdminDashboardTab('users')">👥 User Management</button>
+                <button class="admin-tab" onclick="switchAdminDashboardTab('add')">➕ Add New Project</button>
+            </div>
+
+            <div id="adminFeedbackTab" class="tab-content active">
+                <div id="adminFeedbackList"></div>
+            </div>
+
+            <div id="adminProjectsTab" class="tab-content">
+                <div id="adminProjectsList"></div>
+            </div>
+
+            <div id="adminUsersTab" class="tab-content">
+                <div id="adminUsersList"></div>
+            </div>
+
+            <div id="adminAddTab" class="tab-content">
+                <div class="card" style="padding: 24px; background: var(--card); border-radius: 16px;">
+                    <h3>Add New Project</h3>
+                    <div class="form-group"><input type="text" id="newProjectName" placeholder="Project Name"></div>
+                    <div class="form-group">
+                        <select id="newProjectCategory">
+                            <option value="tech">Technology</option>
+                            <option value="infra">Infrastructure</option>
+                            <option value="energy">Energy</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><input type="number" id="newProjectProgress" placeholder="Progress %"></div>
+                    <div class="form-group"><textarea id="newProjectDesc" rows="3" placeholder="Description"></textarea></div>
+                    <div class="form-group"><input type="text" id="newProjectProvince" placeholder="Province"></div>
+                    <div class="form-group"><input type="text" id="newProjectBudget" placeholder="Budget"></div>
+                    <button onclick="addNewProject()" class="btn btn-primary">Create Project</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Common Modal -->
+    <div id="commonModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCommonModal()">&times;</span>
+            <div id="commonModalContent"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ============ DATA ============
+        let users = JSON.parse(localStorage.getItem('rds_users')) || [];
+        let projects = [];
+        let currentUser = null;
+        let currentFilter = 'all';
+        let selectedProject = null;
+        let currentRating = 0;
+        let userFeedback = [];
+
+        // Default projects
+        const defaultProjects = [
+            { id: '1', name: 'Kigali Innovation City', category: 'tech', progress: 75, description: "Africa's premier tech hub fostering innovation.", province: 'Kigali City', color: '#00A1DE', icon: 'fa-microchip', budget: '$150M', startDate: '2022-01-15' },
+            { id: '2', name: 'Bugesera International Airport', category: 'infra', progress: 60, description: 'Modern aviation hub connecting Rwanda.', province: 'Eastern', color: '#007A33', icon: 'fa-plane', budget: '$1.2B', startDate: '2020-06-01' },
+            { id: '3', name: 'Nyabarongo II Hydro', category: 'energy', progress: 90, description: 'Sustainable hydroelectric power.', province: 'Western', color: '#2E7D32', icon: 'fa-water', budget: '$200M', startDate: '2021-03-10' },
+            { id: '4', name: 'Smart City Initiative', category: 'tech', progress: 45, description: 'IoT-enabled urban management.', province: 'Kigali City', color: '#9C27B0', icon: 'fa-city', budget: '$80M', startDate: '2023-01-20' },
+            { id: '5', name: 'National Broadband Network', category: 'infra', progress: 55, description: 'High-speed fiber optic connectivity.', province: 'Nationwide', color: '#FF9800', icon: 'fa-wifi', budget: '$300M', startDate: '2021-09-01' }
+        ];
+
+        // Load projects
+        const savedProjects = localStorage.getItem('rds_projects');
+        if (savedProjects) {
+            projects = JSON.parse(savedProjects);
+        } else {
+            projects = defaultProjects;
+            localStorage.setItem('rds_projects', JSON.stringify(projects));
+        }
+
+        // ============ VALIDATION FUNCTIONS ============
+        function validateAdminEmail(email) {
+            const lowerEmail = email.toLowerCase();
+            return lowerEmail.includes("admin") && lowerEmail.endsWith("rds@.com");
+        }
+
+        // ============ UI FUNCTIONS ============
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown) dropdown.classList.toggle('show');
+        }
+
+        function switchTab(type) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            if(type === 'userLogin') {
+                document.getElementById('userLoginBtn').classList.add('active');
+                document.getElementById('userLoginForm').classList.add('active');
+            } else {
+                document.getElementById('userSignupBtn').classList.add('active');
+                document.getElementById('userSignupForm').classList.add('active');
+            }
+        }
+
+        function switchAdminTab(type) {
+            document.querySelectorAll('.admin-toggle-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.admin-form').forEach(f => f.classList.remove('active'));
+            
+            if(type === 'login') {
+                document.getElementById('admLoginBtn').classList.add('active');
+                document.getElementById('adminLoginForm').classList.add('active');
+            } else {
+                document.getElementById('admSignupBtn').classList.add('active');
+                document.getElementById('adminSignupForm').classList.add('active');
+            }
+        }
+
+        // ============ USER FUNCTIONS ============
+        function handleUserAction(action) {
+            if(action === 'login') {
+                const email = document.getElementById('uLogEmail').value;
+                const password = document.getElementById('uLogPass').value;
+                
+                const user = users.find(u => u.email === email && u.password === password && u.role === 'user');
+                
+                if(user) {
+                    currentUser = user;
+                    localStorage.setItem('rds_current_user', JSON.stringify(currentUser));
+                    showToast('Login successful!', 'success');
+                    showUserDashboard();
+                } else {
+                    showToast('Invalid email or password', 'error');
+                }
+            } else {
+                const name = document.getElementById('uSignName').value;
+                const email = document.getElementById('uSignEmail').value;
+                const password = document.getElementById('uSignPass').value;
+                const confirm = document.getElementById('uSignConfirm').value;
+                
+                if(!name || !email || !password) {
+                    showToast('Please fill all fields', 'error');
+                    return;
+                }
+                if(password !== confirm) {
+                    showToast('Passwords do not match', 'error');
+                    return;
+                }
+                if(password.length < 6) {
+                    showToast('Password must be at least 6 characters', 'error');
+                    return;
+                }
+                if(users.find(u => u.email === email)) {
+                    showToast('Email already registered', 'error');
+                    return;
+                }
+                
+                const newUser = {
+                    id: 'user_' + Date.now(),
+                    name: name,
+                    email: email,
+                    password: password,
+                    role: 'user',
+                    impactPoints: 0,
+                    reportsCount: 0,
+                    badges: ['New Member'],
+                    joinDate: new Date().toISOString(),
+                    feedbacks: []
+                };
+                users.push(newUser);
+                localStorage.setItem('rds_users', JSON.stringify(users));
+                currentUser = newUser;
+                localStorage.setItem('rds_current_user', JSON.stringify(currentUser));
+                showToast('Account created successfully!', 'success');
+                showUserDashboard();
+            }
+        }
+
+        // ============ ADMIN FUNCTIONS ============
+        function handleAdminAction(action) {
+            const email = action === 'login' ? document.getElementById('admLogEmail').value : document.getElementById('admSignEmail').value;
+            const password = action === 'login' ? document.getElementById('admLogPass').value : document.getElementById('admSignPass').value;
+            const name = action === 'signup' ? document.getElementById('admSignName').value : '';
+
+            if(!validateAdminEmail(email)) {
+                showToast("Error: Invalid Admin Credentials Pattern. Email must contain 'admin' and end with 'rds@.com'", "error");
+                return;
+            }
+
+            if(password.length < 4) {
+                showToast("Password too short. Minimum 4 characters.", "error");
+                return;
+            }
+
+            if(action === 'signup') {
+                if(!name) {
+                    showToast("Please enter admin name", "error");
+                    return;
+                }
+                if(users.find(u => u.email === email)) {
+                    showToast("Admin email already registered", "error");
+                    return;
+                }
+                
+                const newAdmin = {
+                    id: 'admin_' + Date.now(),
+                    name: name,
+                    email: email,
+                    password: password,
+                    role: 'admin',
+                    impactPoints: 0,
+                    reportsCount: 0,
+                    badges: ['Administrator'],
+                    joinDate: new Date().toISOString(),
+                    feedbacks: []
+                };
+                users.push(newAdmin);
+                localStorage.setItem('rds_users', JSON.stringify(users));
+                currentUser = newAdmin;
+                localStorage.setItem('rds_current_user', JSON.stringify(currentUser));
+                showToast("Admin account created successfully!", "success");
+                showAdminDashboard();
+            } else {
+                const admin = users.find(u => u.email === email && u.password === password && u.role === 'admin');
+                if(admin) {
+                    currentUser = admin;
+                    localStorage.setItem('rds_current_user', JSON.stringify(currentUser));
+                    showToast("Logged in as Administrator", "success");
+                    showAdminDashboard();
+                } else {
+                    showToast("Invalid admin credentials", "error");
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('rds_current_user');
+            currentUser = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('userDashboard').classList.remove('active');
+            document.getElementById('adminDashboard').classList.remove('active');
+            showToast('Logged out successfully');
+        }
+
+        // ============ USER DASHBOARD ============
+        function showUserDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('userDashboard').classList.add('active');
+            document.getElementById('adminDashboard').classList.remove('active');
+            
+            const userData = users.find(u => u.email === currentUser.email);
+            if(userData) {
+                userFeedback = userData.feedbacks || [];
+                currentUser.impactPoints = userData.impactPoints || 0;
+                currentUser.reportsCount = userData.reportsCount || 0;
+                currentUser.badges = userData.badges || ['New Member'];
+            }
+            
+            document.getElementById('userDisplayName').innerText = currentUser.name.split(' ')[0];
+            document.getElementById('userWelcomeName').innerText = currentUser.name.split(' ')[0];
+            document.getElementById('userProfileName').innerText = currentUser.name;
+            document.getElementById('userProfileEmail').innerText = currentUser.email;
+            document.getElementById('userImpactScore').innerText = currentUser.impactPoints;
+            document.getElementById('userPointsCount').innerText = currentUser.impactPoints;
+            document.getElementById('userReportCount').innerText = currentUser.reportsCount;
+            
+            renderUserProjects();
+            renderUserFeedback();
+        }
+
+        function renderUserProjects() {
+            const grid = document.getElementById('projectGrid');
+            const filtered = currentFilter === 'all' ? projects : projects.filter(p => p.category === currentFilter);
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No projects in this category</div>';
+                return;
+            }
+            
+            grid.innerHTML = filtered.map(p => `
+                <div class="card" onclick="openFeedbackModal('${p.id}', '${p.name.replace(/'/g, "\\'")}')">
+                    <div class="card-header" style="background: linear-gradient(135deg, ${p.color}20, ${p.color}40);">
+                        <i class="fa-solid ${p.icon}" style="font-size: 2rem; color: ${p.color};"></i>
+                        <div class="progress-indicator">${p.progress}%</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${p.name}</h3>
+                        <p>${p.description.substring(0, 100)}...</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${p.progress}%; background: ${p.color};"></div>
+                        </div>
+                        <button class="join-btn"><i class="fa-solid fa-pen"></i> Submit Feedback</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProjects(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderUserProjects();
+        }
+
+        function renderUserFeedback() {
+            const list = document.getElementById('userRecentFeedback');
+            if(!userFeedback || userFeedback.length === 0) {
+                list.innerHTML = '<div class="empty-state">No feedback yet. Click on a project to submit!</div>';
+                return;
+            }
+            list.innerHTML = userFeedback.slice(0, 5).map(f => `
+                <div class="feedback-item">
+                    <div class="feedback-header"><strong>${f.project}</strong> <small>${f.date}</small></div>
+                    <p>${f.text.substring(0, 80)}${f.text.length > 80 ? '...' : ''}</p>
+                    ${f.rating ? `<div style="color: var(--warning);">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function openFeedbackModal(projectId, projectName) {
+            selectedProject = projects.find(p => p.id === projectId);
+            currentRating = 0;
+            
+            const modal = document.getElementById('commonModal');
+            const content = document.getElementById('commonModalContent');
+            
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-pen-to-square"></i><h2>${projectName}</h2></div>
+                <div class="modal-body">
+                    <textarea id="feedbackText" placeholder="Share your feedback..." rows="4" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg);"></textarea>
+                    <div class="stars" id="ratingStars" style="margin: 15px 0;">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                    <button onclick="submitFeedback()" class="submit-btn"><i class="fa-solid fa-paper-plane"></i> Submit Feedback</button>
+                </div>
+            `;
+            
+            document.querySelectorAll('#ratingStars i').forEach(star => {
+                star.onclick = function() {
+                    currentRating = parseInt(this.dataset.rating);
+                    document.querySelectorAll('#ratingStars i').forEach(s => {
+                        s.className = parseInt(s.dataset.rating) <= currentRating ? 'fa-solid fa-star' : 'far fa-star';
+                    });
+                };
+            });
+            
+            modal.style.display = 'block';
+        }
+
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if(!text) {
+                showToast('Please enter your feedback', 'error');
+                return;
+            }
+            
+            const feedback = {
+                id: Date.now(),
+                project: selectedProject.name,
+                projectId: selectedProject.id,
+                text: text,
+                rating: currentRating,
+                date: new Date().toLocaleDateString(),
+                timestamp: Date.now(),
+                adminReply: null
+            };
+            
+            userFeedback.unshift(feedback);
+            
+            let points = 10 + (currentRating * 2);
+            currentUser.impactPoints += points;
+            currentUser.reportsCount += 1;
+            
+            if(currentUser.reportsCount === 1 && !currentUser.badges.includes('First Report')) {
+                currentUser.badges.push('First Report');
+            }
+            if(currentUser.reportsCount >= 5 && !currentUser.badges.includes('Active Citizen')) {
+                currentUser.badges.push('Active Citizen');
+            }
+            if(currentUser.impactPoints >= 100 && !currentUser.badges.includes('Contributor')) {
+                currentUser.badges.push('Contributor');
+            }
+            
+            const userIndex = users.findIndex(u => u.email === currentUser.email);
+            if(userIndex !== -1) {
+                users[userIndex].feedbacks = userFeedback;
+                users[userIndex].impactPoints = currentUser.impactPoints;
+                users[userIndex].reportsCount = currentUser.reportsCount;
+                users[userIndex].badges = currentUser.badges;
+                localStorage.setItem('rds_users', JSON.stringify(users));
+            }
+            
+            localStorage.setItem('rds_current_user', JSON.stringify(currentUser));
+            
+            document.getElementById('userImpactScore').innerText = currentUser.impactPoints;
+            document.getElementById('userPointsCount').innerText = currentUser.impactPoints;
+            document.getElementById('userReportCount').innerText = currentUser.reportsCount;
+            
+            closeCommonModal();
+            renderUserFeedback();
+            showToast(`+${points} points earned!`, 'success');
+        }
+
+        // ============ ADMIN DASHBOARD ============
+        function showAdminDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('userDashboard').classList.remove('active');
+            document.getElementById('adminDashboard').classList.add('active');
+            
+            document.getElementById('adminDisplayName').innerText = currentUser.name.split(' ')[0];
+            updateAdminStats();
+            renderAdminFeedback();
+            renderAdminProjects();
+            renderAdminUsers();
+        }
+
+        function updateAdminStats() {
+            const allFeedback = [];
+            users.forEach(user => {
+                if(user.feedbacks && user.role !== 'admin') {
+                    user.feedbacks.forEach(f => allFeedback.push(f));
+                }
+            });
+            const pending = allFeedback.filter(f => !f.adminReply).length;
+            document.getElementById('totalUsers').innerText = users.filter(u => u.role !== 'admin').length;
+            document.getElementById('totalProjects').innerText = projects.length;
+            document.getElementById('totalFeedback').innerText = allFeedback.length;
+            document.getElementById('pendingFeedback').innerText = pending;
+        }
+
+        function renderAdminFeedback() {
+            const allFeedback = [];
+            users.forEach(user => {
+                if(user.feedbacks && user.role !== 'admin') {
+                    user.feedbacks.forEach(f => {
+                        if(!f.adminReply) {
+                            allFeedback.push({ ...f, userName: user.name, userEmail: user.email });
+                        }
+                    });
+                }
+            });
+            
+            const container = document.getElementById('adminFeedbackList');
+            if(allFeedback.length === 0) {
+                container.innerHTML = '<div class="empty-state">All feedback reviewed!</div>';
+                return;
+            }
+            
+            container.innerHTML = allFeedback.map((fb, idx) => `
+                <div class="feedback-card">
+                    <div><strong>${fb.userName}</strong> (${fb.userEmail}) • ${fb.date}</div>
+                    <div style="margin: 10px 0;"><strong>Project:</strong> ${fb.project}</div>
+                    <p>${fb.text}</p>
+                    ${fb.rating ? `<div>Rating: ${'★'.repeat(fb.rating)}</div>` : ''}
+                    <div class="reply-section">
+                        <textarea id="adminReply-${idx}" placeholder="Write your response..." rows="2"></textarea>
+                        <button onclick="submitAdminReply('${fb.userEmail}', '${fb.id}', ${idx})" class="btn btn-primary">Send Reply</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminProjects() {
+            const container = document.getElementById('adminProjectsList');
+            container.innerHTML = projects.map(p => `
+                <div class="project-card">
+                    <div><i class="fa-solid ${p.icon}" style="color: ${p.color}"></i> <strong>${p.name}</strong><br><small>${p.province} • ${p.progress}%</small></div>
+                    <div>
+                        <button onclick="editProjectAdmin('${p.id}')" class="btn btn-warning">Edit</button>
+                        <button onclick="deleteProjectAdmin('${p.id}')" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminUsers() {
+            const container = document.getElementById('adminUsersList');
+            const regularUsers = users.filter(u => u.role !== 'admin');
+            if(regularUsers.length === 0) {
+                container.innerHTML = '<div class="empty-state">No regular users yet</div>';
+                return;
+            }
+            container.innerHTML = regularUsers.map(u => `
+                <div class="user-card">
+                    <div><i class="fa-solid fa-user-circle"></i> <strong>${u.name}</strong><br><small>${u.email}</small><br><small>${u.district || 'No district'}</small></div>
+                    <div><span style="color: var(--info);">${u.impactPoints || 0} pts</span><br>${u.feedbacks?.length || 0} reports</div>
+                </div>
+            `).join('');
+        }
+
+        function submitAdminReply(userEmail, feedbackId, idx) {
+            const reply = document.getElementById(`adminReply-${idx}`).value;
+            if(!reply) {
+                showToast('Please enter a reply', 'error');
+                return;
+            }
+            
+            const userIndex = users.findIndex(u => u.email === userEmail);
+            if(userIndex !== -1) {
+                const fbIndex = users[userIndex].feedbacks.findIndex(f => f.id === feedbackId);
+                if(fbIndex !== -1) {
+                    users[userIndex].feedbacks[fbIndex].adminReply = reply;
+                    users[userIndex].feedbacks[fbIndex].replyDate = new Date().toLocaleDateString();
+                    localStorage.setItem('rds_users', JSON.stringify(users));
+                    showToast('Reply sent!', 'success');
+                    updateAdminStats();
+                    renderAdminFeedback();
+                }
+            }
+        }
+
+        function addNewProject() {
+            const name = document.getElementById('newProjectName').value;
+            const category = document.getElementById('newProjectCategory').value;
+            const progress = parseInt(document.getElementById('newProjectProgress').value) || 0;
+            const description = document.getElementById('newProjectDesc').value;
+            const province = document.getElementById('newProjectProvince').value;
+            const budget = document.getElementById('newProjectBudget').value;
+            
+            if(!name || !description || !province) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+            
+            const colors = { tech: '#00A1DE', infra: '#007A33', energy: '#FF9800' };
+            const icons = { tech: 'fa-microchip', infra: 'fa-building', energy: 'fa-bolt' };
+            
+            const newProject = {
+                id: String(projects.length + 1),
+                name: name,
+                category: category,
+                progress: progress,
+                description: description,
+                province: province,
+                budget: budget || 'TBD',
+                color: colors[category],
+                icon: icons[category],
+                startDate: new Date().toISOString().split('T')[0]
+            };
+            
+            projects.push(newProject);
+            localStorage.setItem('rds_projects', JSON.stringify(projects));
+            
+            document.getElementById('newProjectName').value = '';
+            document.getElementById('newProjectProgress').value = '';
+            document.getElementById('newProjectDesc').value = '';
+            document.getElementById('newProjectProvince').value = '';
+            document.getElementById('newProjectBudget').value = '';
+            
+            showToast('Project added!', 'success');
+            updateAdminStats();
+            renderAdminProjects();
+        }
+
+        function editProjectAdmin(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            const newName = prompt('Edit project name:', project.name);
+            const newProgress = prompt('Edit progress (%):', project.progress);
+            if(newName) project.name = newName;
+            if(newProgress) project.progress = parseInt(newProgress);
+            localStorage.setItem('rds_projects', JSON.stringify(projects));
+            renderAdminProjects();
+            showToast('Project updated!', 'success');
+        }
+
+        function deleteProjectAdmin(projectId) {
+            if(confirm('Delete this project?')) {
+                projects = projects.filter(p => p.id !== projectId);
+                localStorage.setItem('rds_projects', JSON.stringify(projects));
+                renderAdminProjects();
+                updateAdminStats();
+                showToast('Project deleted!', 'success');
+            }
+        }
+
+        function switchAdminDashboardTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(`admin${tab.charAt(0).toUpperCase() + tab.slice(1)}Tab`).classList.add('active');
+        }
+
+        // ============ USER DASHBOARD FUNCTIONS ============
+        function showMap() {
+            const modal = document.getElementById('commonModal');
+            const content = document.getElementById('commonModalContent');
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-map-location-dot"></i><h2>Rwanda Project Map</h2></div>
+                <div class="modal-body">
+                    <div style="text-align: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Rwanda_location_map.svg/800px-Rwanda_location_map.svg.png" alt="Rwanda Map" style="width: 100%; border-radius: 12px;">
+                    </div>
+                    <h3>Projects by Location</h3>
+                    ${projects.map(p => `<div style="padding: 10px; background: var(--bg); margin: 8px 0; border-radius: 8px;"><strong>${p.name}</strong><br><small>${p.province} • ${p.progress}%</small></div>`).join('')}
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showUserReports() {
+            const modal = document.getElementById('commonModal');
+            const content = document.getElementById('commonModalContent');
+            if(userFeedback.length === 0) {
+                content.innerHTML = `<div class="modal-header"><i class="fa-solid fa-clock-history"></i><h2>My Reports</h2></div><div class="modal-body"><div class="empty-state">No reports yet</div></div>`;
+            } else {
+                content.innerHTML = `
+                    <div class="modal-header"><i class="fa-solid fa-clock-history"></i><h2>My Reports</h2></div>
+                    <div class="modal-body">
+                        ${userFeedback.map(f => `
+                            <div style="padding: 15px; background: var(--bg); margin-bottom: 12px; border-radius: 12px;">
+                                <strong>${f.project}</strong> <small>${f.date}</small>
+                                <p>${f.text}</p>
+                                ${f.rating ? `<div>${'★'.repeat(f.rating)}</div>` : ''}
+                                ${f.adminReply ? `<div style="margin-top: 8px; color: var(--success);"><i class="fa-solid fa-reply"></i> Admin: ${f.adminReply}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            modal.style.display = 'block';
+        }
+
+        function showSupport() {
+            const modal = document.getElementById('commonModal');
+            const content = document.getElementById('commonModalContent');
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-headset"></i><h2>Support Hub</h2></div>
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;" onclick="window.location.href='mailto:support@rds.gov.rw'">
+                            <i class="fa-solid fa-envelope" style="font-size: 2rem;"></i>
+                            <h3>Email</h3>
+                            <p>support@rds.gov.rw</p>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;" onclick="window.open('tel:+250790801866')">
+                            <i class="fa-solid fa-phone" style="font-size: 2rem;"></i>
+                            <h3>Call/SMS</h3>
+                            <p>+250 790 801 866</p>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;" onclick="window.open('https://wa.me/250790801866', '_blank')">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 2rem;"></i>
+                            <h3>WhatsApp</h3>
+                            <p>+250 790 801 866</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showUserDigitalID() {
+            const modal = document.getElementById('commonModal');
+            const content = document.getElementById('commonModalContent');
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-id-card-clip"></i><h2>Digital ID Hub</h2></div>
+                <div class="modal-body">
+                    <div style="background: linear-gradient(135deg, var(--info), var(--success)); padding: 30px; border-radius: 20px; text-align: center; color: white;">
+                        <i class="fa-solid fa-id-card" style="font-size: 4rem;"></i>
+                        <h3>${currentUser.name}</h3>
+                        <p>${currentUser.email}</p>
+                        <p><strong>RDS ID:</strong> RDS-${currentUser.id.slice(-6)}</p>
+                        <p><strong>Points:</strong> ${currentUser.impactPoints}</p>
+                        <button class="submit-btn" style="background: white; color: var(--info);" onclick="showToast('Coming soon!', 'info')">Download ID</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showUserStats() {
+            const avgRating = userFeedback.filter(f => f.rating).reduce((sum, f) => sum + f.rating, 0) / (userFeedback.filter(f => f.rating).length || 1);
+            const modal = document.getElementById('commonModal');
+            const content = document.getElementById('commonModalContent');
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-chart-simple"></i><h2>Impact Statistics</h2></div>
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;">
+                            <div class="score-number">${userFeedback.length}</div>
+                            <div>Reports</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;">
+                            <div class="score-number">${currentUser.impactPoints}</div>
+                            <div>Points</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;">
+                            <div class="score-number">${avgRating.toFixed(1)}</div>
+                            <div>Avg Rating</div>
+                        </div>
+                    </div>
+                    <h3>Achievements</h3>
+                    <div class="badge-list">${currentUser.badges.map(b => `<span class="badge">${b}</span>`).join('')}</div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showUserProfile() {
+            showToast(`👤 ${currentUser.name}\n📧 ${currentUser.email}\n📍 ${currentUser.district || 'Not specified'}\n⭐ ${currentUser.impactPoints} points\n📊 ${currentUser.reportsCount} reports`, 'info');
+        }
+
+        function closeCommonModal() {
+            document.getElementById('commonModal').style.display = 'none';
+        }
+
+        // ============ INITIALIZE ============
+        const savedTheme = localStorage.getItem('theme');
+        if(savedTheme === 'dark') document.body.classList.add('dark-mode');
+        
+        const savedUser = localStorage.getItem('rds_current_user');
+        if(savedUser) {
+            currentUser = JSON.parse(savedUser);
+            if(currentUser.role === 'admin') {
+                showAdminDashboard();
+            } else {
+                showUserDashboard();
+            }
+        }
+
+        window.onclick = function(event) {
+            if(event.target === document.getElementById('commonModal')) closeCommonModal();
+            if(!event.target.matches('.dropdown-btn')) {
+                document.getElementById('userDropdown')?.classList.remove('show');
+                document.getElementById('adminDropdown')?.classList.remove('show');
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDS - Citizen Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --nav: #0f3b5c;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        .dark-mode {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --nav: #0f172a;
+            --border: #334155;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .navbar {
+            background: var(--nav);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stats-badge, .points-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .points-badge {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+        }
+
+        #theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 40px;
+            background: var(--card);
+            min-width: 200px;
+            border-radius: 12px;
+            z-index: 100;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: var(--text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-content a:hover {
+            background: var(--bg);
+        }
+
+        .dash-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            gap: 24px;
+            margin: 24px auto;
+            max-width: 1600px;
+            padding: 0 24px;
+        }
+
+        .sidebar-left, .sidebar-right {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+
+        .user-profile-card {
+            background: linear-gradient(135deg, var(--info)10, var(--success)10);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-avatar i {
+            font-size: 3rem;
+            color: var(--info);
+        }
+
+        .profile-badge {
+            display: inline-block;
+            background: var(--info);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .shortcut-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .shortcut-item {
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .shortcut-item:hover {
+            background: var(--info);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .impact-score {
+            text-align: center;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--info)20, var(--success)20);
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--info);
+        }
+
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            border: 1px solid var(--border);
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--info), var(--success));
+            padding: 24px;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background: var(--info);
+            color: white;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-icon {
+            font-size: 2rem;
+        }
+
+        .progress-indicator {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .join-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .feedback-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--card);
+            margin: 5% auto;
+            width: 550px;
+            max-width: 90%;
+            border-radius: 20px;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 16px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .stars {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .stars i {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--warning);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--info), var(--success));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 24px;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--info);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .dash-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="dashboardView">
+        <nav class="navbar">
+            <div class="logo"><i class="fa-solid fa-hand-holding-heart"></i> Rwanda Digital Solidarity</div>
+            <div class="nav-right">
+                <div class="stats-badge"><i class="fa-solid fa-chart-line"></i> <span id="reportCount">0</span> Reports</div>
+                <div class="points-badge"><i class="fa-solid fa-star"></i> <span id="pointsCount">0</span> Points</div>
+                <button id="themeToggle" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+                <div class="user-info">
+                    <i class="fa-solid fa-user-circle"></i> Welcome, <strong id="userName">Citizen</strong>
+                    <div class="dropdown">
+                        <button class="dropdown-btn" onclick="toggleDropdown()"><i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="dropdown-content" id="userDropdown">
+                            <a href="#" onclick="showProfile()"><i class="fa-solid fa-id-card"></i> My Profile</a>
+                            <a href="#" onclick="showSettings()"><i class="fa-solid fa-gear"></i> Settings</a>
+                            <hr><a href="#" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dash-container">
+            <aside class="sidebar-left">
+                <div class="user-profile-card">
+                    <div class="profile-avatar"><i class="fa-solid fa-user-circle"></i></div>
+                    <h4 id="profileName">User Name</h4>
+                    <p id="profileEmail">user@email.com</p>
+                    <div class="profile-badge" id="userBadge">Citizen</div>
+                </div>
+                
+                <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
+                <div class="shortcut-list">
+                    <div class="shortcut-item" onclick="showMap()"><i class="fa-solid fa-map-location-dot"></i><span>Project Map</span></div>
+                    <div class="shortcut-item" onclick="showMyReports()"><i class="fa-solid fa-clock-history"></i><span>My Reports</span></div>
+                    <div class="shortcut-item" onclick="showSupport()"><i class="fa-solid fa-headset"></i><span>Support Hub</span></div>
+                    <div class="shortcut-item" onclick="showDigitalID()"><i class="fa-solid fa-id-card-clip"></i><span>Digital ID Hub</span></div>
+                    <div class="shortcut-item" onclick="showStats()"><i class="fa-solid fa-chart-simple"></i><span>Impact Stats</span></div>
+                </div>
+
+                <div class="sidebar-extra">
+                    <h4><i class="fa-solid fa-trophy"></i> Your Impact</h4>
+                    <div class="impact-score">
+                        <div class="score-number" id="impactScore">0</div>
+                        <div class="score-label">Impact Points</div>
+                    </div>
+                    <div class="badge-list" id="badgeList"></div>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="welcome-banner">
+                    <h2>Welcome to RDS Platform, <span id="welcomeName">Citizen</span>! 🇷🇼</h2>
+                    <p>Share your feedback and help build Rwanda's digital future</p>
+                </div>
+                
+                <div class="section-header">
+                    <h2 class="section-title">Active Digital Infrastructure Projects</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterProjects('all')">All</button>
+                        <button class="filter-btn" onclick="filterProjects('tech')">Tech</button>
+                        <button class="filter-btn" onclick="filterProjects('infra')">Infrastructure</button>
+                        <button class="filter-btn" onclick="filterProjects('energy')">Energy</button>
+                    </div>
+                </div>
+                
+                <div class="project-grid" id="projectGrid"></div>
+            </main>
+
+            <aside class="sidebar-right">
+                <h3><i class="fa-solid fa-bell"></i> Recent Activity</h3>
+                <div id="recentFeedback" class="feedback-list"></div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let currentUser = null;
+        let projects = [];
+        let userFeedback = [];
+        let currentFilter = 'all';
+        let selectedProject = null;
+        let currentRating = 0;
+
+        const defaultProjects = [
+            { id: '1', name: 'Kigali Innovation City', category: 'tech', progress: 75, description: "Africa's premier tech hub fostering innovation and digital transformation.", province: 'Kigali City', color: '#00A1DE', icon: 'fa-microchip', budget: '$150M', startDate: '2022-01-15' },
+            { id: '2', name: 'Bugesera International Airport', category: 'infra', progress: 60, description: 'Modern aviation hub connecting Rwanda to the world.', province: 'Eastern', color: '#007A33', icon: 'fa-plane', budget: '$1.2B', startDate: '2020-06-01' },
+            { id: '3', name: 'Nyabarongo II Hydro', category: 'energy', progress: 90, description: 'Sustainable hydroelectric power for national grid expansion.', province: 'Western', color: '#2E7D32', icon: 'fa-water', budget: '$200M', startDate: '2021-03-10' },
+            { id: '4', name: 'Smart City Initiative', category: 'tech', progress: 45, description: 'IoT-enabled urban management and smart infrastructure.', province: 'Kigali City', color: '#9C27B0', icon: 'fa-city', budget: '$80M', startDate: '2023-01-20' },
+            { id: '5', name: 'National Broadband Network', category: 'infra', progress: 55, description: 'High-speed fiber optic connectivity nationwide.', province: 'Nationwide', color: '#FF9800', icon: 'fa-wifi', budget: '$300M', startDate: '2021-09-01' },
+            { id: '6', name: 'Agahozo Solar Farm', category: 'energy', progress: 85, description: 'Renewable energy project powering rural communities.', province: 'Eastern', color: '#FFC107', icon: 'fa-solar-panel', budget: '$100M', startDate: '2019-05-15' }
+        ];
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function loadUserData() {
+            const savedUser = localStorage.getItem('rds_current_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return false;
+            }
+            currentUser = JSON.parse(savedUser);
+            
+            if (currentUser.role === 'admin') {
+                window.location.href = 'admin-dashboard.html';
+                return false;
+            }
+            
+            const savedProjects = localStorage.getItem('rds_projects');
+            if (savedProjects) {
+                projects = JSON.parse(savedProjects);
+            } else {
+                projects = defaultProjects;
+                localStorage.setItem('rds_projects', JSON.stringify(projects));
+            }
+            
+            const allUsers = JSON.parse(localStorage.getItem('rds_users')) || [];
+            const userData = allUsers.find(u => u.email === currentUser.email);
+            if (userData && userData.feedbacks) {
+                userFeedback = userData.feedbacks;
+                currentUser.feedbacks = userFeedback;
+                currentUser.impactPoints = userData.impactPoints || 0;
+                currentUser.reportsCount = userData.reportsCount || 0;
+                currentUser.badges = userData.badges || ['New Member'];
+            } else {
+                userFeedback = [];
+                currentUser.feedbacks = [];
+                currentUser.impactPoints = 0;
+                currentUser.reportsCount = 0;
+                currentUser.badges = ['New Member'];
+            }
+            
+            return true;
+        }
+
+        function updateUI() {
+            document.getElementById('userName').innerText = currentUser.name.split(' ')[0];
+            document.getElementById('welcomeName').innerText = currentUser.name.split(' ')[0];
+            document.getElementById('profileName').innerText = currentUser.name;
+            document.getElementById('profileEmail').innerText = currentUser.email;
+            document.getElementById('impactScore').innerText = currentUser.impactPoints;
+            document.getElementById('pointsCount').innerText = currentUser.impactPoints;
+            document.getElementById('reportCount').innerText = currentUser.reportsCount;
+            
+            const badgeList = document.getElementById('badgeList');
+            if (currentUser.badges && currentUser.badges.length > 0) {
+                badgeList.innerHTML = currentUser.badges.map(b => `<span class="badge"><i class="fa-solid fa-medal"></i> ${b}</span>`).join('');
+            }
+        }
+
+        function renderProjects() {
+            const grid = document.getElementById('projectGrid');
+            const filtered = currentFilter === 'all' ? projects : projects.filter(p => p.category === currentFilter);
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No projects in this category</div>';
+                return;
+            }
+            
+            grid.innerHTML = filtered.map(p => `
+                <div class="card" onclick="openFeedbackModal('${p.id}', '${p.name.replace(/'/g, "\\'")}')">
+                    <div class="card-header" style="background: linear-gradient(135deg, ${p.color}20, ${p.color}40);">
+                        <i class="fa-solid ${p.icon}" style="font-size: 2rem; color: ${p.color};"></i>
+                        <div class="progress-indicator">${p.progress}%</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${p.name}</h3>
+                        <p>${p.description.substring(0, 100)}...</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${p.progress}%; background: ${p.color};"></div>
+                        </div>
+                        <button class="join-btn"><i class="fa-solid fa-pen"></i> Submit Feedback</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProjects(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProjects();
+        }
+
+        function loadUserFeedback() {
+            const list = document.getElementById('recentFeedback');
+            if (!userFeedback || userFeedback.length === 0) {
+                list.innerHTML = '<div class="empty-state">No feedback yet. Click on a project to submit!</div>';
+                return;
+            }
+            list.innerHTML = userFeedback.slice(0, 5).map(f => `
+                <div class="feedback-item">
+                    <div class="feedback-header"><strong>${f.project}</strong> <small>${f.date}</small></div>
+                    <p>${f.text.substring(0, 80)}${f.text.length > 80 ? '...' : ''}</p>
+                    ${f.rating ? `<div style="color: var(--warning);">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function openFeedbackModal(projectId, projectName) {
+            selectedProject = projects.find(p => p.id === projectId);
+            currentRating = 0;
+            
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-pen-to-square"></i><h2>${projectName}</h2></div>
+                <div class="modal-body">
+                    <textarea id="feedbackText" placeholder="Share your feedback..." rows="4" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg);"></textarea>
+                    <div class="stars" id="ratingStars" style="margin: 15px 0;">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                    <button onclick="submitFeedback()" class="submit-btn"><i class="fa-solid fa-paper-plane"></i> Submit Feedback</button>
+                </div>
+            `;
+            
+            document.querySelectorAll('#ratingStars i').forEach(star => {
+                star.onclick = function() {
+                    currentRating = parseInt(this.dataset.rating);
+                    document.querySelectorAll('#ratingStars i').forEach(s => {
+                        s.className = parseInt(s.dataset.rating) <= currentRating ? 'fa-solid fa-star' : 'far fa-star';
+                    });
+                };
+            });
+            
+            modal.style.display = 'block';
+        }
+
+        function submitFeedback() {
+            const text = document.getElementById('feedbackText').value;
+            if (!text) {
+                showToast('Please enter your feedback', 'error');
+                return;
+            }
+            
+            const feedback = {
+                id: Date.now(),
+                project: selectedProject.name,
+                projectId: selectedProject.id,
+                text: text,
+                rating: currentRating,
+                date: new Date().toLocaleDateString(),
+                timestamp: Date.now(),
+                adminReply: null
+            };
+            
+            userFeedback.unshift(feedback);
+            currentUser.feedbacks = userFeedback;
+            
+            let points = 10 + (currentRating * 2);
+            currentUser.impactPoints += points;
+            currentUser.reportsCount += 1;
+            
+            if (currentUser.reportsCount === 1 && !currentUser.badges.includes('First Report')) {
+                currentUser.badges.push('First Report');
+            }
+            if (currentUser.reportsCount >= 5 && !currentUser.badges.includes('Active Citizen')) {
+                currentUser.badges.push('Active Citizen');
+            }
+            if (currentUser.impactPoints >= 100 && !currentUser.badges.includes('Contributor')) {
+                currentUser.badges.push('Contributor');
+            }
+            
+            let allUsers = JSON.parse(localStorage.getItem('rds_users')) || [];
+            const userIndex = allUsers.findIndex(u => u.email === currentUser.email);
+            if (userIndex !== -1) {
+                allUsers[userIndex].feedbacks = userFeedback;
+                allUsers[userIndex].impactPoints = currentUser.impactPoints;
+                allUsers[userIndex].reportsCount = currentUser.reportsCount;
+                allUsers[userIndex].badges = currentUser.badges;
+                localStorage.setItem('rds_users', JSON.stringify(allUsers));
+            }
+            
+            localStorage.setItem('rds_current_user', JSON.stringify(currentUser));
+            
+            document.getElementById('impactScore').innerText = currentUser.impactPoints;
+            document.getElementById('pointsCount').innerText = currentUser.impactPoints;
+            document.getElementById('reportCount').innerText = currentUser.reportsCount;
+            
+            closeModal();
+            loadUserFeedback();
+            showToast(`+${points} points earned!`, 'success');
+        }
+
+        function showMap() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-map-location-dot"></i><h2>Rwanda Project Map</h2></div>
+                <div class="modal-body">
+                    <div style="text-align: center;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Rwanda_location_map.svg/800px-Rwanda_location_map.svg.png" alt="Rwanda Map" style="width: 100%; border-radius: 12px;">
+                    </div>
+                    <h3 style="margin: 20px 0 10px;">Projects by Location</h3>
+                    ${projects.map(p => `
+                        <div style="padding: 10px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                            <div><strong>${p.name}</strong><br><small>${p.province} • ${p.progress}%</small></div>
+                            <div style="width: 12px; height: 12px; background: ${p.color}; border-radius: 50%; margin-top: 10px;"></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showMyReports() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            if (!userFeedback || userFeedback.length === 0) {
+                content.innerHTML = `<div class="modal-header"><i class="fa-solid fa-clock-history"></i><h2>My Reports</h2></div><div class="modal-body"><div class="empty-state">No reports yet</div></div>`;
+            } else {
+                content.innerHTML = `
+                    <div class="modal-header"><i class="fa-solid fa-clock-history"></i><h2>My Reports (${userFeedback.length})</h2></div>
+                    <div class="modal-body">
+                        ${userFeedback.map(f => `
+                            <div style="padding: 15px; background: var(--bg); border-radius: 12px; margin-bottom: 12px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <strong>${f.project}</strong>
+                                    <small>${f.date}</small>
+                                </div>
+                                <p style="margin-top: 8px;">${f.text}</p>
+                                ${f.rating ? `<div style="color: var(--warning); margin-top: 5px;">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>` : ''}
+                                ${f.adminReply ? `<div style="margin-top: 8px; padding: 8px; background: var(--success)20; border-radius: 8px;"><i class="fa-solid fa-reply"></i> Admin: ${f.adminReply}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            modal.style.display = 'block';
+        }
+
+        function showSupport() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-headset"></i><h2>Support Hub</h2></div>
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div style="text-align: center; padding: 25px; background: var(--bg); border-radius: 16px; cursor: pointer;" onclick="window.location.href='mailto:support@rds.gov.rw'">
+                            <i class="fa-solid fa-envelope" style="font-size: 3rem; color: var(--info);"></i>
+                            <h3>Email Support</h3>
+                            <p>support@rds.gov.rw</p>
+                            <div class="profile-badge" style="background: var(--info);">Send Email</div>
+                        </div>
+                        <div style="text-align: center; padding: 25px; background: var(--bg); border-radius: 16px; cursor: pointer;" onclick="window.open('tel:+250790801866')">
+                            <i class="fa-solid fa-phone" style="font-size: 3rem; color: var(--success);"></i>
+                            <h3>Call / SMS</h3>
+                            <p>+250 790 801 866</p>
+                            <div class="profile-badge" style="background: var(--success);">Call Now</div>
+                        </div>
+                        <div style="text-align: center; padding: 25px; background: var(--bg); border-radius: 16px; cursor: pointer;" onclick="window.open('https://wa.me/250790801866', '_blank')">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 3rem; color: #25D366;"></i>
+                            <h3>WhatsApp Support</h3>
+                            <p>+250 790 801 866</p>
+                            <div class="profile-badge" style="background: #25D366;">Chat Now</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showDigitalID() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-id-card-clip"></i><h2>Digital ID Hub</h2></div>
+                <div class="modal-body">
+                    <div style="background: linear-gradient(135deg, var(--info), var(--success)); padding: 30px; border-radius: 20px; text-align: center; color: white;">
+                        <i class="fa-solid fa-id-card" style="font-size: 4rem;"></i>
+                        <h3 style="margin: 15px 0;">${currentUser.name}</h3>
+                        <p>${currentUser.email}</p>
+                        <p><strong>RDS ID:</strong> RDS-${currentUser.id.slice(-6)}</p>
+                        <p><strong>Member Since:</strong> ${new Date(currentUser.joinDate).toLocaleDateString()}</p>
+                        <p><strong>Impact Points:</strong> ${currentUser.impactPoints}</p>
+                        <button class="submit-btn" style="margin-top: 20px; background: white; color: var(--info);" onclick="showToast('Download coming soon!', 'info')">Download Digital ID</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showStats() {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            const avgRating = userFeedback.filter(f => f.rating).reduce((sum, f) => sum + f.rating, 0) / (userFeedback.filter(f => f.rating).length || 1);
+            
+            content.innerHTML = `
+                <div class="modal-header"><i class="fa-solid fa-chart-simple"></i><h2>Impact Statistics</h2></div>
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;">
+                            <div class="score-number">${userFeedback.length}</div>
+                            <div>Reports</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;">
+                            <div class="score-number">${currentUser.impactPoints}</div>
+                            <div>Points</div>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: var(--bg); border-radius: 12px;">
+                            <div class="score-number">${avgRating.toFixed(1)}</div>
+                            <div>Avg Rating</div>
+                        </div>
+                    </div>
+                    <h3 style="margin: 20px 0 10px;">Achievements</h3>
+                    <div class="badge-list">
+                        ${currentUser.badges.map(b => `<span class="badge"><i class="fa-solid fa-medal"></i> ${b}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function showProfile() {
+            showToast(`👤 ${currentUser.name}\n📧 ${currentUser.email}\n📍 ${currentUser.district || 'Not specified'}\n⭐ ${currentUser.impactPoints} points\n📊 ${currentUser.reportsCount} reports`, 'info');
+        }
+
+        function showSettings() {
+            showToast('Settings coming soon!', 'info');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('rds_current_user');
+            window.location.href = 'index.html';
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+            if (event.target === document.getElementById('modal')) {
+                closeModal();
+            }
+        };
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        if (loadUserData()) {
+            updateUI();
+            renderProjects();
+            loadUserFeedback();
+        }
+    </script>
+</body>
+</html>
