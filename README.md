@@ -89,6 +89,7 @@ Step	Action	Result
 6	View users	Monitor platform activity
 Project Structure
 text
+
 rds-platform/
 │
 ├── index.html              # Login/Signup page
@@ -98,6 +99,7 @@ rds-platform/
 ├── script.js               # Application logic
 │
 └── README.md               # Project documentation
+
 Note: The final version consolidates all dashboards into index.html for simplicity.
 
 Impact Points System
